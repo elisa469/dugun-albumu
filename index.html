@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canlı Düğün Albümü</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen text-gray-800 py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-rose-50 via-white to-amber-50 flex justify-center items-start">
+
+    <div class="w-full max-w-2xl bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl shadow-rose-200/50 overflow-hidden border border-white mt-2 sm:mt-6 transition-all">
+        
+        <img src="cover.png" alt="Düğün Kapak" class="w-full h-auto min-h-[180px] max-h-[300px] object-cover object-center rounded-t-2xl mb-4">
+
+        <div class="p-6 sm:p-10 pt-2">
+            <!-- Header Text -->
+            <div id="header-text" class="text-center mb-10">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-600 to-amber-500">
+                    ✨ Canlı Düğün Albümüne Hoş Geldiniz! ✨
+                </h1>
+                <p class="text-gray-600 leading-relaxed text-sm sm:text-base font-medium">
+                    Bu Mutlu Günden En Güzel Kareleri Bizimle Paylaşın 📸<br>
+                    Gecenin tüm neşesini, çektiğiniz harika fotoğraf ve videoları buradan yükleyerek ölümsüzleştirelim.
+                </p>
+            </div>
+
+            <!-- Lock Message (Hidden by default) -->
+            <div id="closed-message" class="hidden text-center py-12 animate-fade-in">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Bu albümün gönderim süresi dolmuştur</h2>
+                <p class="text-gray-500">İlginiz için teşekkür ederiz! ✨</p>
+            </div>
+
+            <!-- Success Message (Hidden by default) -->
+            <div id="success-message" class="hidden text-center py-8 animate-fade-in">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-tr from-rose-100 to-amber-100 mb-6 border-4 border-white shadow-lg shadow-rose-200">
+                    <span class="text-4xl">💖</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">Harika Anılarınız İçin Teşekkür Ederiz!</h2>
+                <p class="text-gray-600 leading-relaxed mb-8 font-medium">
+                    Yüklediğiniz fotoğraflar albümümüze eklendi.
+                </p>
+                <button id="reset-btn" type="button" class="px-8 py-4 bg-white border-2 border-rose-200 text-rose-600 font-bold rounded-2xl hover:bg-rose-50 transition-all shadow-sm active:scale-95">
+                    YENİ FOTOĞRAF EKLE ➔
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form id="wedding-form" class="space-y-6">
+                <!-- Name Field -->
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-gray-800 mb-2">👤 Adınız ve Soyadınız <span class="text-rose-500">*</span></label>
+                    <input type="text" id="name" name="name" required placeholder="Örn: Ayşe Yılmaz" 
+                        class="w-full px-5 py-4 rounded-2xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-rose-100 focus:border-rose-400 outline-none transition-all text-gray-800">
+                </div>
+
+                <!-- Message Field -->
+                <div>
+                    <label for="message" class="block text-sm font-semibold text-gray-800 mb-2">💭 Çiftimize bir not bırakmak ister misiniz?</label>
+                    <textarea id="message" name="message" rows="3" placeholder="Tebrik mesajınızı buraya yazabilirsiniz..." 
+                        class="w-full px-5 py-4 rounded-2xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-rose-100 focus:border-rose-400 outline-none transition-all text-gray-800 resize-none"></textarea>
+                </div>
+
+                <!-- Photo Upload Field -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">📥 Düğünden en güzel fotoğrafları seçip buraya yükleyin:</label>
+                    
+                    <div id="drop-area" class="relative w-full rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center cursor-pointer hover:bg-rose-50 hover:border-rose-300 transition-colors">
+                        <input type="file" id="photo-upload" name="photos" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div class="pointer-events-none">
+                            <span class="text-4xl block mb-2">📸</span>
+                            <p class="text-sm text-gray-700 font-medium">Fotoğrafları seçmek için tıklayın veya sürükleyin</p>
+                            <p class="text-xs text-gray-400 mt-2">Maksimum dosya boyutu: 10 MB</p>
+                        </div>
+                    </div>
+
+                    <!-- Thumbnails -->
+                    <div id="preview-container" class="mt-4 grid grid-cols-4 sm:grid-cols-5 gap-3 empty:hidden"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-bold text-lg py-5 px-6 rounded-2xl shadow-xl shadow-rose-300/50 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 group">
+                        <span id="btn-text" class="flex items-center gap-2">
+                            Anıları Albüme Gönder ✨ 
+                            <span class="group-hover:translate-x-1 transition-transform">➔</span>
+                        </span>
+                        <div id="loader" class="spinner hidden"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const form = document.getElementById('wedding-form');
+        const headerText = document.getElementById('header-text');
+        const closedMessage = document.getElementById('closed-message');
+        const successMessage = document.getElementById('success-message');
+        const resetBtn = document.getElementById('reset-btn');
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('photo-upload');
+        const previewContainer = document.getElementById('preview-container');
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('wedding');
+        const ciftParam = urlParams.get('cift') || '';
+
+        function checkFormStatus() {
+            const isAlbumActive = localStorage.getItem('isAlbumActive') !== 'false';
+            const closingDate = localStorage.getItem('kapanis_tarihi');
+            let isExpired = false;
+            
+            if (closingDate) {
+                const now = new Date();
+                const cDate = new Date(closingDate);
+                if (now > cDate) isExpired = true;
+            }
+            
+            if (!isAlbumActive || isExpired) {
+                form.classList.add('hidden');
+                headerText.classList.add('hidden');
+                successMessage.classList.add('hidden');
+                closedMessage.classList.remove('hidden');
+            } else {
+                form.classList.remove('hidden');
+                headerText.classList.remove('hidden');
+                closedMessage.classList.add('hidden');
+            }
+        }
+        
+        checkFormStatus();
+        
+        // Reset Button
+        resetBtn.addEventListener('click', () => {
+            form.reset();
+            previewContainer.innerHTML = '';
+            successMessage.classList.add('hidden');
+            form.classList.remove('hidden');
+            headerText.classList.remove('hidden');
+        });
+
+        // File Drag & Drop visual feedback
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.classList.add('bg-rose-50', 'border-rose-300');
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.classList.remove('bg-rose-50', 'border-rose-300');
+        });
+
+        // Image Preview Logic
+        fileInput.addEventListener('change', handleFiles);
+        dropArea.addEventListener('drop', (e) => {
+            fileInput.files = e.dataTransfer.files; 
+            handleFiles({ target: { files: e.dataTransfer.files } });
+        });
+        
+        function handleFiles(e) {
+            previewContainer.innerHTML = '';
+            Array.from(e.target.files).forEach(file => {
+                if (!file.type.startsWith('image/')) return;
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`${file.name} 10MB'tan büyük olamaz.`);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const div = document.createElement('div');
+                    div.className = 'aspect-square rounded-xl overflow-hidden border border-gray-200 shadow-sm';
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.className = 'w-full h-full object-cover';
+                    div.appendChild(img);
+                    previewContainer.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Form Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('loader');
+            
+            if(localStorage.getItem('isAlbumActive') === 'false') {
+                alert("Albüm gönderime kapatılmıştır.");
+                checkFormStatus();
+                return;
+            }
+
+            const DEFAULT_WEBHOOK_URL = 'https://n8n.gigabyteltd.com/webhook-test/dugun-albumu';
+            const webhookUrl = localStorage.getItem('webhookUrl') || DEFAULT_WEBHOOK_URL;
+
+            const formData = new FormData(form);
+            if (slug) formData.append('dugun_slug', slug);
+            if (ciftParam) formData.append('cift', ciftParam);
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+            btnText.classList.add('hidden');
+            loader.classList.remove('hidden');
+            
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors'
+                });
+                
+                form.classList.add('hidden');
+                headerText.classList.add('hidden');
+                successMessage.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error(error);
+                alert('Gönderim sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+                btnText.classList.remove('hidden');
+                loader.classList.add('hidden');
+            }
+        });
+        
+        window.addEventListener('storage', (e) => {
+            if(e.key === 'isAlbumActive' || e.key === 'kapanis_tarihi') checkFormStatus();
+        });
+    </script>
+</body>
+</html>
