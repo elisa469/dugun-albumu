@@ -108,6 +108,20 @@
                         </div>
                     </div>
 
+                    <!-- Auto Expiry Timer -->
+                    <div class="bg-white/80 backdrop-blur border border-rose-100 shadow-sm rounded-2xl p-6">
+                        <h2 class="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <span>⏳</span> Otomatik Kapanma Zamanlayıcısı
+                        </h2>
+                        <p class="text-xs text-slate-500 mb-3">Seçilen tarih ve saat geldiğinde albüm otomatik olarak kapanır.</p>
+                        <div class="flex flex-col gap-3">
+                            <input type="datetime-local" id="albumExpiryInput" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-rose-100 focus:border-rose-400 outline-none transition-all text-slate-800">
+                            <button id="save-expiry-btn" class="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:opacity-90 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-all">Zamanlayıcıyı Kaydet</button>
+                            <button id="clear-expiry-btn" class="w-full bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 font-bold py-2 px-4 rounded-xl transition-all">Süresiz Yap (Sıfırla)</button>
+                        </div>
+                        <p id="expiry-status" class="text-sm text-green-600 mt-2 font-medium hidden">Zamanlayıcı kaydedildi!</p>
+                    </div>
+
                     <!-- Active Album QR Code -->
                     <div class="bg-white/80 backdrop-blur border border-rose-100 shadow-sm rounded-2xl p-6 flex flex-col items-center justify-center">
                         <h3 class="font-bold text-slate-800 mb-1 text-center">Aktif Albüm QR Kodu</h3>
@@ -142,6 +156,11 @@
         const statusToggle = document.getElementById('status-toggle');
         const qrcodeContainer = document.getElementById('qrcode');
         const downloadQrBtn = document.getElementById('download-qr');
+        
+        const albumExpiryInput = document.getElementById('albumExpiryInput');
+        const saveExpiryBtn = document.getElementById('save-expiry-btn');
+        const clearExpiryBtn = document.getElementById('clear-expiry-btn');
+        const expiryStatus = document.getElementById('expiry-status');
 
         // State
         let albums = JSON.parse(localStorage.getItem('wedding_albums') || '[]');
@@ -241,6 +260,11 @@
             webhookUrlInput.value = localStorage.getItem('n8n_webhook_url') || '';
             statusToggle.checked = localStorage.getItem('isAlbumActive') !== 'false';
             
+            const savedExpiry = localStorage.getItem('albumExpiryDate');
+            if (savedExpiry) {
+                albumExpiryInput.value = savedExpiry;
+            }
+            
             // Migrate old single string storage to array if needed
             if (!Array.isArray(albums)) albums = [];
             
@@ -285,6 +309,25 @@
             localStorage.setItem('n8n_webhook_url', webhookUrlInput.value);
             webhookStatus.classList.remove('hidden');
             setTimeout(() => webhookStatus.classList.add('hidden'), 3000);
+        });
+        
+        saveExpiryBtn.addEventListener('click', () => {
+            if(albumExpiryInput.value) {
+                localStorage.setItem('albumExpiryDate', albumExpiryInput.value);
+                expiryStatus.textContent = 'Zamanlayıcı kaydedildi!';
+                expiryStatus.classList.remove('hidden', 'text-rose-600');
+                expiryStatus.classList.add('text-green-600');
+                setTimeout(() => expiryStatus.classList.add('hidden'), 3000);
+            }
+        });
+        
+        clearExpiryBtn.addEventListener('click', () => {
+            localStorage.removeItem('albumExpiryDate');
+            albumExpiryInput.value = '';
+            expiryStatus.textContent = 'Zamanlayıcı sıfırlandı! Sınırsız açık.';
+            expiryStatus.classList.remove('hidden', 'text-green-600');
+            expiryStatus.classList.add('text-rose-600');
+            setTimeout(() => expiryStatus.classList.add('hidden'), 3000);
         });
 
         statusToggle.addEventListener('change', (e) => {
