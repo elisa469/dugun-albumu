@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - Düğün Albümü</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        
+        /* Toggle Switch: Turuncu/Pembe (Rose) tonu */
+        .toggle-checkbox:checked { right: 0; border-color: #f43f5e; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #f43f5e; }
+        .toggle-checkbox { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Album List Active Item: Rose tonu */
+        .album-item.active {
+            border-color: #f43f5e;
+            background-color: #fff1f2;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-rose-50 via-white to-amber-50 flex justify-center">
+
+    <div class="w-full max-w-5xl">
+        
+        <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-rose-200/50 overflow-hidden border border-white">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 px-8 py-6 text-white flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wide">Yönetim Paneli</h1>
+                    <p class="text-rose-100 text-sm mt-1 font-medium">Düğün albümü sistem ayarları ve form kontrolü</p>
+                </div>
+                <div class="text-3xl">✨</div>
+            </div>
+
+            <!-- Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+                
+                <!-- Main Controls -->
+                <div class="space-y-8">
+                    <!-- Album Creation -->
+                    <div class="bg-white/80 backdrop-blur border border-rose-100 shadow-sm rounded-2xl p-6">
+                        <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span>💍</span> Yeni Düğün Albümü Oluştur
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Gelin ve Damadın İsimleri</label>
+                                <input type="text" id="couple-names" placeholder="Örn: Ayşe & Bora" class="w-full px-5 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-rose-100 focus:border-rose-400 outline-none transition-all text-slate-800">
+                            </div>
+                            
+                            <button id="create-album-btn" class="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:opacity-90 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5">
+                                Albümü Oluştur
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Album List -->
+                    <div class="bg-white/80 backdrop-blur border border-rose-100 shadow-sm rounded-2xl p-6">
+                        <h2 class="text-lg font-bold text-slate-800 mb-4">Oluşturulan Albümler</h2>
+                        <ul id="album-list" class="space-y-3 max-h-64 overflow-y-auto pr-2">
+                            <!-- JS ile doldurulacak -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Settings Column -->
+                <div class="space-y-8">
+                    <!-- Live Domain URL -->
+                    <div class="bg-white/80 backdrop-blur border border-rose-100 shadow-sm rounded-2xl p-6">
+                        <h2 class="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <span>🌍</span> Canlı Site (Domain) Adresi
+                        </h2>
+                        <p class="text-xs text-slate-500 mb-3">QR kodun telefonda çalışması için sitenizin internetteki adresini girin (Örn: https://sitem.com). Boş bırakırsanız mevcut yerel adresi kullanır.</p>
+                        <div class="flex flex-col gap-3">
+                            <input type="url" id="domain-url" placeholder="https://..." class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-rose-100 focus:border-rose-400 outline-none transition-all text-slate-800">
+                            <button id="save-domain" class="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:opacity-90 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-all">Kaydet & QR Yenile</button>
+                        </div>
+                        <p id="domain-status" class="text-sm text-green-600 mt-2 font-medium hidden">Alan adı kaydedildi ve QR kod yenilendi!</p>
+                    </div>
+
+                    <!-- Webhook URL -->
+                    <div class="bg-white/80 backdrop-blur border border-rose-100 shadow-sm rounded-2xl p-6">
+                        <h2 class="text-md font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <span>🔗</span> n8n Webhook URL
+                        </h2>
+                        <div class="flex flex-col gap-3">
+                            <input type="url" id="webhook-url" placeholder="https://..." class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-rose-100 focus:border-rose-400 outline-none transition-all text-slate-800">
+                            <button id="save-webhook" class="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:opacity-90 text-white font-bold py-2 px-4 rounded-xl shadow-md transition-all">Kaydet</button>
+                        </div>
+                        <p id="webhook-status" class="text-sm text-green-600 mt-2 font-medium hidden">Webhook başarıyla kaydedildi!</p>
+                    </div>
+
+                    <!-- System Status Toggle -->
+                    <div class="bg-white/80 backdrop-blur border border-rose-100 shadow-sm rounded-2xl p-6 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-md font-semibold text-slate-800">Albüm Alımını Aç/Kapat</h2>
+                            <p class="text-xs text-slate-500 mt-1">Sistemi aktif veya pasif yapın.</p>
+                            <div id="status-badge" class="mt-2 text-xs"></div>
+                        </div>
+                        <div class="relative inline-block w-14 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle" id="status-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer top-1 left-1"/>
+                            <label for="status-toggle" class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <!-- Active Album QR Code -->
+                    <div class="bg-white/80 backdrop-blur border border-rose-100 shadow-sm rounded-2xl p-6 flex flex-col items-center justify-center">
+                        <h3 class="font-bold text-slate-800 mb-1 text-center">Aktif Albüm QR Kodu</h3>
+                        <p id="active-album-display" class="text-xs text-rose-600 font-semibold mb-4 bg-rose-50 px-3 py-1 rounded-full border border-rose-100">Henüz albüm seçilmedi</p>
+                        
+                        <div id="qrcode" class="p-3 bg-white rounded-xl shadow-sm border border-gray-100"></div>
+                        
+                        <p class="text-xs text-slate-500 mt-4 text-center">Davetliler bu kodu okutarak<br>doğrudan aktif albüme ulaşabilir.</p>
+                        <button id="download-qr" class="mt-4 text-sm text-rose-600 hover:text-rose-800 font-bold">QR Kodu İndir</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const coupleNamesInput = document.getElementById('couple-names');
+        const createAlbumBtn = document.getElementById('create-album-btn');
+        const albumListUl = document.getElementById('album-list');
+        const activeAlbumDisplay = document.getElementById('active-album-display');
+        
+        const domainUrlInput = document.getElementById('domain-url');
+        const saveDomainBtn = document.getElementById('save-domain');
+        const domainStatus = document.getElementById('domain-status');
+
+        const webhookUrlInput = document.getElementById('webhook-url');
+        const saveWebhookBtn = document.getElementById('save-webhook');
+        const webhookStatus = document.getElementById('webhook-status');
+        
+        const statusToggle = document.getElementById('status-toggle');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const downloadQrBtn = document.getElementById('download-qr');
+
+        // State
+        let albums = JSON.parse(localStorage.getItem('wedding_albums') || '[]');
+        let activeAlbumId = localStorage.getItem('active_album_id') || null;
+
+        // Helper: Convert Turkish chars to English and create slug
+        function generateSlug(text) {
+            const trMap = { 'çÇ':'c', 'ğĞ':'g', 'şŞ':'s', 'üÜ':'u', 'ıİ':'i', 'öÖ':'o' };
+            for(let key in trMap) {
+                text = text.replace(new RegExp('['+key+']','g'), trMap[key]);
+            }
+            return text.toLowerCase().replace(/&/g, 've').replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+        }
+
+        // Render List
+        function renderAlbums() {
+            albumListUl.innerHTML = '';
+            
+            if (albums.length === 0) {
+                albumListUl.innerHTML = '<li class="text-sm text-slate-400 text-center py-4 font-medium">Henüz albüm oluşturulmadı.</li>';
+                return;
+            }
+
+            albums.forEach(album => {
+                const isActive = album.id === activeAlbumId;
+                const li = document.createElement('li');
+                li.className = `album-item p-4 rounded-xl border flex justify-between items-center transition-colors ${isActive ? 'active' : 'border-gray-200 bg-white/50'}`;
+                
+                li.innerHTML = `
+                    <div>
+                        <div class="font-bold text-slate-800">${album.name}</div>
+                        <div class="text-xs text-slate-500 font-mono mt-1">/${album.id}</div>
+                    </div>
+                    <button onclick="setActiveAlbum('${album.id}')" class="text-sm px-4 py-1.5 rounded-lg font-bold transition-all ${isActive ? 'bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-md' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50 hover:text-rose-500'}">
+                        ${isActive ? 'Aktif' : 'Seç'}
+                    </button>
+                `;
+                albumListUl.appendChild(li);
+            });
+            
+            updateActiveDisplay();
+            generateQR();
+        }
+
+        // Set Active
+        window.setActiveAlbum = function(id) {
+            activeAlbumId = id;
+            localStorage.setItem('active_album_id', activeAlbumId);
+            renderAlbums();
+        };
+
+        function updateActiveDisplay() {
+            if (activeAlbumId) {
+                const activeAlbum = albums.find(a => a.id === activeAlbumId);
+                activeAlbumDisplay.textContent = `Seçili: ${activeAlbum ? activeAlbum.name : activeAlbumId}`;
+                activeAlbumDisplay.className = 'text-xs text-rose-700 font-bold mb-4 bg-rose-100 px-4 py-1.5 rounded-full border border-rose-200';
+            } else {
+                activeAlbumDisplay.textContent = 'Genel Varsayılan (Parametresiz)';
+                activeAlbumDisplay.className = 'text-xs text-slate-500 font-medium mb-4 bg-gray-100 px-4 py-1.5 rounded-full';
+            }
+        }
+
+        // Generate QR
+        let qrCodeObj = null;
+        function generateQR() {
+            qrcodeContainer.innerHTML = ''; 
+            
+            let domain = localStorage.getItem('live_domain_url') || '';
+            let targetUrl = '';
+
+            if (domain) {
+                // Ensure domain doesn't end with slash
+                if(domain.endsWith('/')) domain = domain.slice(0, -1);
+                targetUrl = domain + '/index.html';
+            } else {
+                // Fallback to current URL path logic
+                const currentUrl = window.location.href;
+                const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+                targetUrl = baseUrl + '/index.html';
+            }
+            
+            if (activeAlbumId) targetUrl += `?wedding=${activeAlbumId}`;
+            
+            qrCodeObj = new QRCode(qrcodeContainer, {
+                text: targetUrl,
+                width: 192,
+                height: 192,
+                colorDark : "#be123c", // rose-700
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        // Init
+        function loadState() {
+            domainUrlInput.value = localStorage.getItem('live_domain_url') || '';
+            webhookUrlInput.value = localStorage.getItem('n8n_webhook_url') || '';
+            statusToggle.checked = localStorage.getItem('isAlbumActive') !== 'false';
+            
+            // Migrate old single string storage to array if needed
+            if (!Array.isArray(albums)) albums = [];
+            
+            renderAlbums();
+            
+            // Set initial badge state
+            const badge = document.getElementById('status-badge');
+            if (statusToggle.checked) {
+                badge.textContent = 'Sistem Açık';
+                badge.className = 'px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full';
+            } else {
+                badge.textContent = 'Sistem Kapalı';
+                badge.className = 'px-3 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-full';
+            }
+        }
+
+        // Listeners
+        createAlbumBtn.addEventListener('click', () => {
+            const name = coupleNamesInput.value.trim();
+            if (!name) return alert('Lütfen isim girin.');
+            
+            const id = generateSlug(name);
+            if (albums.find(a => a.id === id)) return alert('Bu isimde bir albüm zaten var.');
+            
+            albums.push({ id, name, created_at: new Date().toISOString() });
+            localStorage.setItem('wedding_albums', JSON.stringify(albums));
+            
+            coupleNamesInput.value = '';
+            
+            if(!activeAlbumId) setActiveAlbum(id);
+            else renderAlbums();
+        });
+
+        saveDomainBtn.addEventListener('click', () => {
+            localStorage.setItem('live_domain_url', domainUrlInput.value.trim());
+            generateQR();
+            domainStatus.classList.remove('hidden');
+            setTimeout(() => domainStatus.classList.add('hidden'), 3000);
+        });
+
+        saveWebhookBtn.addEventListener('click', () => {
+            localStorage.setItem('n8n_webhook_url', webhookUrlInput.value);
+            webhookStatus.classList.remove('hidden');
+            setTimeout(() => webhookStatus.classList.add('hidden'), 3000);
+        });
+
+        statusToggle.addEventListener('change', (e) => {
+            const isActive = e.target.checked;
+            localStorage.setItem('isAlbumActive', isActive ? 'true' : 'false');
+            
+            const badge = document.getElementById('status-badge');
+            if (isActive) {
+                badge.textContent = 'Sistem Açık';
+                badge.className = 'px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full';
+            } else {
+                badge.textContent = 'Sistem Kapalı';
+                badge.className = 'px-3 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-full';
+            }
+        });
+
+        downloadQrBtn.addEventListener('click', () => {
+            const img = qrcodeContainer.querySelector('img');
+            if (!img) return;
+            const link = document.createElement('a');
+            link.download = `QR_${activeAlbumId || 'album'}.png`;
+            link.href = img.src;
+            link.click();
+        });
+
+        loadState();
+    </script>
+</body>
+</html>
