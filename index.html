@@ -27,7 +27,7 @@
 
     <div class="w-full max-w-2xl bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl shadow-rose-200/50 overflow-hidden border border-white mt-2 sm:mt-6 transition-all">
         
-        <img src="cover.png" alt="Düğün Kapak" class="w-full h-auto min-h-[180px] max-h-[300px] object-cover object-center rounded-t-2xl mb-4">
+        <img src="./cover.png" alt="Düğün Kapak" class="w-full h-48 object-cover object-center rounded-t-2xl mb-4">
 
         <div class="p-6 sm:p-10 pt-2">
             <!-- Header Text -->
@@ -127,7 +127,7 @@
         const ciftParam = urlParams.get('cift') || '';
 
         function checkFormStatus() {
-            const isAlbumActive = localStorage.getItem('isAlbumActive') !== 'false';
+            const isAlbumActive = false;
             const closingDate = localStorage.getItem('kapanis_tarihi');
             let isExpired = false;
             
